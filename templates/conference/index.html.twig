@@ -7,6 +7,10 @@
 
 {% for conf in conferences %}
     <h4>{{ conf }}</h4>
-    <a href="/conference/{{conf.id}}">Show comments</a>
+    {# Mauvaise pratique #}
+    {# <a href="/conference/{{conf.id}}">Sho</a> #}
+
+    {# Bonne pratique (On ne doit pas coder en dur au cas où l'url change) #}
+    <a href="{{ path('conference', {id: conf.id}) }}">Show</a>
 {% endfor %}
 {% endblock %}

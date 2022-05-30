@@ -3,16 +3,34 @@
 {% block title %}{{conference.city}} {{conference.year}}{% endblock %}
 
 {% block body %}
-<h2>Comments for {{conference.city}} {{conference.year}}</h2>
+{% if comments|length > 0 %}
+    
+
+<h2>There are {{ comments|length }} comments for {{conference.city}} {{conference.year}}</h2>
 <ul>
 {% for comment in comments %}
     <li>
     <fieldset>
     <legend>{{comment.author}}</legend>
-    <h3>{{comment.text}}</h3>
-    <p>Comment posted at {{comment.createdAt | date('d-m-Y')}}</p>
+    <p>{{comment.text}}</p>
+
+
+    {# Sans extension #}
+    {# <small>Comment posted at {{comment.createdAt | date('d-m-Y')}}</small> --->#}
+    
+    {# AVEC composer require twig/intl-extra #}
+    <small>{{ comment.createdAt|format_datetime('medium', 'short') }}</small>
     </fieldset>
     </li>
 {% endfor %}
 </ul>
+{% if previous >= 0 %}
+    <a href="{{ path('conference', {id: conference.id, offset: previous}) }}">Previous</a>    
+{% endif %}
+{% if next < comments|length %}
+    <a href="{{ path('conference', {id: conference.id, offset: next}) }}">Next</a>    
+{% endif %}
+{% else %}
+<div>No comments had been posted yet for this conference</div>
+{% endif %}
 {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Conference;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,10 +22,14 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conference/{id}', name: 'conference')]
-    public function show(Environment $twig, Conference $conference, CommentRepository $commentRep): Response {
-        return new Response($twig->render('conference/show.html.twig',[
+    public function show(Request $request, Environment $twig, Conference $conference, CommentRepository $commentRep): Response {
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $paginator = $commentRep->getCommentPaginator($conference, $offset);
+        return new Response($twig->render('conference/show.html.twig', [
             'conference' => $conference,
-            'comments' => $commentRep->findBy(['conference' => $conference], ['createdAt' => 'DESC'])
+            'comments' => $paginator,
+            'previous' => $offset - CommentRepository::COMMENT_PER_PAGE,
+            'next' => min(count($paginator), $offset + CommentRepository::COMMENT_PER_PAGE),
         ]));
     }
 }
