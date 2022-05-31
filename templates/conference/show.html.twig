@@ -8,11 +8,17 @@
 
 <h2>There are {{ comments|length }} comments for {{conference.city}} {{conference.year}}</h2>
 <ul>
+
+{# BOUCLE DES COMMENTAIRES #}
 {% for comment in comments %}
     <li>
     <fieldset>
     <legend>{{comment.author}}</legend>
-    <p>{{comment.text}}</p>
+    {% if comment.photoFilename %}
+        <img style="height: 200px;" src="{{ asset('uploads/photos/' ~ comment.photofilename) }}" />
+        {# <h1>Il y a une photo</h1> #}
+    {% endif %}
+    <h4>{{comment.text}}</h4>
 
 
     {# Sans extension #}
@@ -24,6 +30,10 @@
     </li>
 {% endfor %}
 </ul>
+
+
+
+{# CHANGEMENT PAGE DE COMMENTAIRE #}
 {% if previous >= 0 %}
     <a href="{{ path('conference', {slug: conference.slug, offset: previous}) }}">Previous</a>    
 {% endif %}
@@ -33,4 +43,8 @@
 {% else %}
 <div>No comments had been posted yet for this conference</div>
 {% endif %}
+
+
+<h2>Add a feedback</h2>
+{{ form(comment_form) }}
 {% endblock %}
