@@ -16,12 +16,13 @@ class ConferenceController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(Environment $twig, ConferenceRepository $confRep): Response
     {
+        dump($confRep->findAll());
         return new Response($twig->render('conference/index.html.twig', [
             'conferences' => $confRep->findAll(),
         ]));
     }
 
-    #[Route('/conference/{id}', name: 'conference')]
+    #[Route('/conference/{slug}', name: 'conference')]
     public function show(Request $request, Environment $twig, Conference $conference, CommentRepository $commentRep): Response {
         $offset = max(0, $request->query->getInt('offset', 0));
         $paginator = $commentRep->getCommentPaginator($conference, $offset);
